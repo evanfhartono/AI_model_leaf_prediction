@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="hero">
+        <h1>Plant Leaf Detector</h1>
+        <label for="imageInput" id="drop-area">
+            <input type="file" id="imageInput" name="file" accept="image/*" hidden> 
+            <div id="img-view">
+                <img src="icon.png" alt="icon.png">
+                <p>Select Image</p>
+            </div>
+            <button id="classifybutton">Classify</button>
+        </label>
+        <p id="predictionResult"></p>
+        <div class="navbar">
+            <!-- <img src="navbar.png" alt="icon.png"> -->
+        </div>
+    </div>
+    <script type="text/javascript">
+        function delay(time) {
+            return new Promise(resolve => setTimeout(resolve, time));
+        }
+
+        function uploadImg() {
+            document.getElementById('predictionResult').textContent = 'PROCESSING'
+            delay(1000).then(() => console.log('ran after 1 second1 passed'));
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fetch('http://localhost:8000/predict', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("File uploaded successfully:", data);
+                document.getElementById('predictionResult').textContent = "Prediction: " + data.class + " Confidence:" + 
+                                                                            Math.round(data.confidence * 10000) / 100 + "%"
+            })
+            .then(values =>values => values.forEach(value => console.log(value.isEmployed)))
+            .catch(error => {
+                console.error("Error uploading file:", error);
+            });
+        }
+        //===================================================================================================
+        const dropArea = document.getElementById('drop-area');
+        const inputFile = document.getElementById('imageInput');
+        const imgView = document.getElementById('img-view');
+
+        inputFile.addEventListener("change", uploadImage);
+
+        document.getElementById('classifybutton').addEventListener("click", function() {
+            const button = document.getElementById('classifybutton');
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file.");
+                return;
+            }
+            if (button.textContent === 'Classify') {
+                uploadImg();
+                button.textContent = 'Reset'; // Change button text to "Reset"
+                button.style.backgroundColor = 'red';
+            } else if (button.textContent === 'Reset') {
+                document.getElementById('predictionResult').textContent = '';
+                imgView.style.backgroundImage = `none`;
+                imgView.innerHTML = `<img src="icon.png" alt="icon.png"> <p>Select Image</p>`;
+                button.textContent = 'Classify';
+                button.style.backgroundColor = 'green';
+            }
+        });
+
+        function uploadImage() {
+            const file = inputFile.files[0];
+            if (file) {
+                let imglink = URL.createObjectURL(file);
+                imgView.style.backgroundImage = `url(${imglink})`;
+                imgView.textContent = "";
+                imgView.style.border = 0;
+            }
+        }
+        dropArea.addEventListener("dragover", function(e) {
+            e.preventDefault();
+        });
+        dropArea.addEventListener("drop", function(e) {
+            e.preventDefault();
+            inputFile.files = e.dataTransfer.files;
+            uploadImage();
+        });
+    </script>
+</body> 
+</html>
