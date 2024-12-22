@@ -32,7 +32,7 @@ CLASS_NAMES = ['Alstonia Scholaris',
  'Pomegranate',
  'Pongamia']
 
-MODEL = tf.keras.models.load_model("D:/1/Binus/AI/PlantLeafPrediction/mainmode.h5")
+MODEL = tf.keras.models.load_model("../mainmodel.h5")
 
 def read_file_as_image(data) -> np.ndarray:
     image = np.array(Image.open(BytesIO(data)))
