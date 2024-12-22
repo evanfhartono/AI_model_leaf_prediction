@@ -11,6 +11,7 @@ RUN THE PROTOTYPE
 USE THE PROTOTYPE
 1. Upload Image to the dropzone
 2. Tab classify button and wait for the result
+3. You can use the Picture from kaggle(https://www.kaggle.com/code/gpiosenka/plants-f1-score-98-5/input)
 
 CONFIG:
   - if the port of the configuration in main.py program doesnt match the port of the HTML live server port, turn of the server and change the port to match the HTML live server port
